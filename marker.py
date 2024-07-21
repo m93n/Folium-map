@@ -10,31 +10,47 @@ waterFalls = pd.read_csv("waterfalls.txt")
 # If you want read from csv file
 # waterFalls = pd.read_csv("waterfalls.csv")
 
-map = folium.Map([32, 53], zoom_start=6)
+lat = list(waterFalls['LATITUDE'])
+lon = list(waterFalls['LONGITUDE'])
+name = list(waterFalls['NAME'])
+state = list((waterFalls['STATE']))
+height = list(waterFalls['HEIGHT'])
 
-for row in range(waterFalls.T.columns.stop):
-    
-    name = waterFalls.iloc[row, 0]
-    STATE = waterFalls.iloc[row, 1]
-    height = waterFalls.iloc[row, 2]
-    latitude = float(waterFalls.iloc[row, 3])
-    longitude = float(waterFalls.iloc[row, 4])
-    
-    color = 'red' # Default height is upper 50 so red color is default color
-    
+map = folium.Map(location=[32, 53], zoom_start=5)
+
+#waterfalls
+fg_w = folium.FeatureGroup("Waterfalls")
+
+def color_producer(height):
     if height < 20:
-        color = "green"
-    
-    elif 50 > height > 20:
+        color= "green"
+    elif height <= 50:
         color = "orange"
-    
-    
-    folium.Marker(
-        location=[latitude, longitude],
-        popup=f"{name} در استان {STATE} با ارتفاع {height}",
-        icon=folium.Icon(color=color),
-    ).add_to(map)
+    else:
+        color = "red"
+        
+    return color
 
+for lt, ln, nm, hg, st in zip(lat, lon, name, height, state):
+    html = """
+    <h1>Name: %s</h1>
+    <h4>Height: %s</h4>
+    <h4>State: %s</h4>
+    <a href="https://google.com/search?q=%s" target="_blank">Read More</a>
+    """ % (nm, hg, st, nm)
+    iframe = folium.IFrame(html=html, width=300, height=200)
+    fg_w.add_child(folium.Marker(location=[lt,ln], popup=folium.Popup(iframe), icon=folium.Icon(color=color_producer(hg))))
 
+#countries borders
+fg_b = folium.FeatureGroup(name="Countries Boredrs")
+world_data = open("world.json", encoding='utf-8-sig').read()
+folium.GeoJson(data=world_data).add_to(fg_b)
+
+#adding fg(s) to map
+fg_b.add_to(map)
+map.add_child(fg_w)
+
+#add layer control to map
+map.add_child(folium.LayerControl())
 
 map.save("waterFallsMap.html")
