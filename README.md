@@ -34,4 +34,4 @@ after running file, html file will created in current directory with waterFallsM
 It will be like my result image.
 
 ### Image of Result
-![Screenshot_12-7-2024_16935_](https://github.com/user-attachments/assets/0a28c2f8-77eb-4935-b51a-a58463c374ec)
+![Screenshot_12-7-2024_16935_](https://github.com/user-attachments/assets/b670e744-a24d-45c7-8c62-ca087b0becb8)
